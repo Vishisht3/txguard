@@ -1,0 +1,10 @@
+# Ignore dataset and binary weights
+*.csv
+data/
+models/
+*.pth
+*.pt
+
+# Ignore bytecode and notebook checkpoints
+__pycache__/
+.ipynb_checkpoints/
