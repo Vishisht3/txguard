@@ -42,7 +42,7 @@ def synchronous_inference(features: List[float]) -> float:
 @app.post("/predict-risk", status_code=status.HTTP_200_OK)
 async def predict_risk(payload: TransactionPayload):
     start_time = time.time()
-    
+
     if len(payload.features) != INPUT_FEATURES:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
