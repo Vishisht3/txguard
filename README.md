@@ -1,120 +1,87 @@
 # TXGuard: AI Risk Manager and Fraud Detection for Financials
 
-TXGuard is a Python-based fraud detection project focused on identifying anomalous and potentially fraudulent financial transactions using machine learning techniques.
+> **Note:** The original repo had to be deleted due to sloppy code. I have created a fresh repo with the same name to keep the commit history clean, modular, and reflective of the final production pipeline built during this hackathon.
+
+TXGuard is a Python-based fraud detection system for highly imbalanced card-transaction classification, optimized for operational precision-recall tradeoffs and financial impact.
 
 ## Dataset
 
-This project uses the **Credit Card Fraud Detection** dataset from Kaggle:
-- Source: https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud
-- Credits: Machine Learning Group - ULB
+This project uses the [Credit Card Fraud Detection dataset](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud).
 
-## Project Goals
+- Raw dataset files (including `creditcard.csv`) are intentionally excluded via `.gitignore` following standard ML repository practices.
+- Place `creditcard.csv` in the local `data/` directory before training.
 
-- Detect fraudulent transactions with high recall while managing false positives.
-- Build an interpretable and production-minded ML risk pipeline.
-- Provide a modular foundation for experimentation, evaluation, and deployment.
+## Setup
 
-## High-Level Architecture
+1. Clone the repository.
+2. Place `creditcard.csv` in `data/`.
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Train the model:
+   ```bash
+   python train.py
+   ```
 
-```mermaid
-flowchart TD
-    A[Transaction Data Source\nKaggle Credit Card Fraud Dataset] --> B[Data Ingestion Layer]
-    B --> C[Data Validation & Quality Checks]
-    C --> D[Preprocessing & Feature Engineering]
-    D --> E[Train / Validation Split]
+## System Architecture
 
-    E --> F[Model Training\nFraud Classifier]
-    F --> G[Model Evaluation\nPR-AUC, ROC-AUC, Recall, Precision]
-    G --> H{Performance Acceptable?}
+![TxGuard System Architecture](assets/architecture_diagram.png)
 
-    H -- No --> D
-    H -- Yes --> I[Model Registry / Saved Artifacts]
-    I --> J[Inference Service / Batch Scoring]
+## 🎥 Project Demo & Walkthrough
 
-    J --> K[Risk Scoring Engine]
-    K --> L[Decision Layer\nAllow / Review / Block]
-    L --> M[Monitoring & Drift Detection]
-    M --> N[Retraining Trigger]
-    N --> D
-```
+To add the demo video:
+1. Open the repository on GitHub.
+2. Edit `README.md` in the web editor.
+3. Drag and drop the `.mp4` demo file directly into the editor.
+4. Commit changes to embed the uploaded video link in the README.
 
-## Architecture Components
+## Experimental Iteration Log
 
-### 1. Data Ingestion Layer
-Loads transaction records from source files (e.g., CSV) and prepares them for downstream processing.
+| Iteration | Configuration | PR-AUC | Precision | Recall |
+|---|---|---:|---:|---:|
+| Baseline | PyTorch MLP | 0.6210 | 12.4% | 81.2% |
+| Experiment 1 | Focal Loss | 0.7079 | 18.2% | 78.4% |
+| Experiment 2 | PR-AUC Early Stopping + log1p | 0.7101 | 24.5% | 75.1% |
+| Experiment 3 | WeightedRandomSampler | 0.7820 | 41.0% | 72.4% |
+| Experiment 4 | Residual MLP + Mish + AdamW | 0.8232 | 85.37% | 71.43% |
+| Final | TxGuard + Feature SMOTE + Cost-Sensitive Focal Loss + F2 Threshold 0.7177 | 0.8589 | 84.85% | 85.71% |
 
-### 2. Data Validation & Quality Checks
-Performs schema checks, missing-value audits, type consistency checks, and label distribution profiling.
+![TxGuard Evaluation Dashboard](assets/evaluation_dashboard.png)
 
-### 3. Preprocessing & Feature Engineering
-Handles normalization/scaling, class-imbalance strategy (e.g., weighting or resampling), and model-ready feature generation.
+## Held-Out Test Evaluation (56,962 Transactions)
 
-### 4. Model Training
-Trains one or more supervised ML classifiers for binary fraud detection.
+- Captured **97/98 fraud cases** (**98.98% Effective Recall via Two-Tier Cascading Engine**)
+- **Hard False Positives:** 18 cases (**0.032% Hard FPR**)
+- **Net Financial Impact:** **₹320,900 Net Savings**
+  - Gross Fraud Saved: ₹336,000
+  - FP Insult Cost: -₹15,000
+  - Compute: -₹100
 
-### 5. Model Evaluation
-Assesses model performance with fraud-focused metrics:
-- Precision
-- Recall
-- F1-score
-- ROC-AUC
-- PR-AUC
-- Confusion Matrix
+## Implementation Architecture (Module Map)
 
-### 6. Model Registry / Artifacts
-Stores serialized models, preprocessing transformers, configuration, and experiment metadata.
+- `data_setup.py`: Abstract dataset contracts, SMOTE synthesis, and PyTorch dataloader factory.
+- `model_builder.py`: Deep Tabular Residual MLP architecture with skip connections and Mish activations.
+- `engine.py`: Custom CostSensitiveFocalLoss, online hard negative mining, PR-AUC early stopping, and training loop.
+- `utils.py`: Defensive model artifact saving pipelines.
+- `train.py`: CLI orchestration script with OneCycleLR scheduling.
+- `app.py`: Integration endpoints for transaction scoring.
 
-### 7. Inference Service / Batch Scoring
-Runs predictions on incoming transactions (real-time or periodic batches).
-
-### 8. Risk Scoring Engine
-Converts model output probabilities into business-aligned risk scores and thresholds.
-
-### 9. Decision Layer
-Applies action policies:
-- **Allow** (low risk)
-- **Review** (medium risk)
-- **Block** (high risk)
-
-### 10. Monitoring & Retraining
-Tracks data drift, score drift, and outcome feedback; triggers retraining when performance degrades.
-
-## Suggested Repository Structure
+## Repository Structure
 
 ```text
 txguard/
+├─ app.py
+├─ data_setup.py
+├─ engine.py
+├─ model_builder.py
+├─ train.py
+├─ utils.py
 ├─ data/
-│  ├─ raw/
-│  └─ processed/
-├─ notebooks/
-├─ src/
-│  ├─ ingestion/
-│  ├─ preprocessing/
-│  ├─ features/
-│  ├─ models/
-│  ├─ evaluation/
-│  ├─ inference/
-│  └─ risk/
-├─ artifacts/
-├─ tests/
+│  └─ creditcard.csv (local only; gitignored)
+├─ assets/
+│  ├─ architecture_diagram.png
+│  └─ evaluation_dashboard.png
 ├─ requirements.txt
 └─ README.md
 ```
-
-## Model Development Notes
-
-Because fraud data is highly imbalanced, prioritize:
-- Recall on the fraud class,
-- Precision-recall tradeoff,
-- Threshold tuning based on business cost.
-
-## Future Enhancements
-
-- Add explainability (e.g., SHAP) for risk decisions.
-- Introduce model versioning and experiment tracking (MLflow).
-- Add API serving layer (FastAPI) for real-time scoring.
-- Add CI checks for data validation and model regression.
-
-## License
-
-Add a license file (e.g., MIT) if you plan to open-source this project.
