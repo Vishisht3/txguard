@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TxGuard</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Header Bar -->
+  <header class="app-header">
+    <div class="brand-title">TxGuard</div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" id="btn-export">Export CSV</button>
+    </div>
+  </header>
+
+  <!-- Toolbar & Notebook Tabs -->
+  <div class="workbench-toolbar">
+    <div class="tabs-container">
+      <button class="tab-btn active" data-tab="command-center">Command Center</button>
+      <button class="tab-btn" data-tab="agent-studio">Agent Studio</button>
+      <button class="tab-btn" data-tab="webhooks">Webhooks</button>
+    </div>
+    <div class="stats-strip">
+      <div class="stat-chip"><span class="chip-label">Screened</span> <strong id="stat-screened">0</strong></div>
+      <div class="stat-chip"><span class="chip-label">Captured</span> <strong id="stat-captured">$0.00</strong></div>
+      <div class="stat-chip"><span class="chip-label">Prevented</span> <strong id="stat-prevented">$0.00</strong></div>
+      <div class="stat-chip"><span class="chip-label">2FA Holds</span> <strong id="stat-holds">0</strong></div>
+      <div class="stat-chip"><span class="chip-label">Latency</span> <strong id="stat-latency">&mdash;</strong></div>
+    </div>
+  </div>
+
+  <!-- Main Viewports -->
+  <main class="content-area">
+    <!-- TAB 1: Command Center -->
+    <div class="tab-pane active" id="tab-command-center">
+      <div class="main-split">
+        <!-- Left: Order Authorization Form -->
+        <section class="pane left-pane">
+          <div class="pane-header">Order Authorization</div>
+          <div class="pane-body">
+            <form id="order-form">
+              <div class="form-group">
+                <label for="catalog-select">Catalog Item (Optional)</label>
+                <select id="catalog-select">
+                  <option value="">Select catalog item or enter custom item</option>
+                </select>
+              </div>
+
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="item-title">Item Title *</label>
+                  <input type="text" id="item-title" placeholder="Merchant item name" required>
+                </div>
+                <div class="form-group">
+                  <label for="amount">Amount (USD) *</label>
+                  <input type="number" id="amount" step="0.01" min="0" placeholder="0.00" required>
+                </div>
+              </div>
+
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="buyer-email">Buyer Email *</label>
+                  <input type="email" id="buyer-email" placeholder="buyer@domain.com" required>
+                </div>
+                <div class="form-group">
+                  <label for="buyer-name">Buyer Name</label>
+                  <input type="text" id="buyer-name" placeholder="Full name">
+                </div>
+              </div>
+
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="billing-country">Billing Country</label>
+                  <input type="text" id="billing-country" value="US" maxlength="2">
+                </div>
+                <div class="form-group">
+                  <label for="shipping-country">Shipping Country</label>
+                  <input type="text" id="shipping-country" value="US" maxlength="2">
+                </div>
+              </div>
+
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="velocity-1h">1h Velocity</label>
+                  <input type="number" id="velocity-1h" value="1" min="1">
+                </div>
+                <div class="form-group">
+                  <label for="account-age">Account Age (Days)</label>
+                  <input type="number" id="account-age" value="365" min="0">
+                </div>
+              </div>
+
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="device-trust">Device Trust [0–1]</label>
+                  <input type="number" id="device-trust" step="0.05" min="0" max="1" value="0.90">
+                </div>
+                <div class="form-group">
+                  <label for="email-risk">Email Risk [0–1]</label>
+                  <input type="number" id="email-risk" step="0.05" min="0" max="1" value="0.05">
+                </div>
+              </div>
+
+              <div class="checkbox-row">
+                <label><input type="checkbox" id="country-mismatch"> Country Mismatch</label>
+                <label><input type="checkbox" id="proxy-ip"> Proxy / VPN IP</label>
+                <label><input type="checkbox" id="digital-goods"> Digital Goods</label>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary" id="btn-authorize">Authorize Order</button>
+                <button type="button" class="btn btn-secondary" id="btn-clear-order">Clear Form</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- Right: Forensic Inspector -->
+        <section class="pane right-pane">
+          <div class="pane-header">Forensic Inspector</div>
+          <div class="pane-body" id="forensic-body">
+            <div class="empty-state-box">No order selected.</div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Bottom: Transaction Ledger -->
+      <section class="pane bottom-pane">
+        <div class="pane-header pane-header-split">
+          <span>Transaction Ledger</span>
+          <div class="ledger-filter-controls">
+            <input type="text" id="ledger-search" placeholder="Filter orders...">
+            <select id="ledger-status-filter">
+              <option value="ALL">All Statuses</option>
+              <option value="APPROVED">Approved</option>
+              <option value="CHALLENGE_2FA">2FA Holds</option>
+              <option value="REJECTED">Rejected</option>
+            </select>
+          </div>
+        </div>
+        <div class="pane-body ledger-body" id="ledger-body">
+          <div class="empty-state-box">No transactions recorded yet.</div>
+        </div>
+      </section>
+    </div>
+
+    <!-- TAB 2: Agent Studio -->
+    <div class="tab-pane" id="tab-agent-studio">
+      <section class="pane full-pane agent-pane">
+        <div class="pane-header pane-header-split">
+          <span>Agent Studio</span>
+          <button class="btn btn-secondary" id="btn-clear-agent-log">Clear Log</button>
+        </div>
+        <div class="pane-body agent-log-body" id="agent-log">
+          <div class="empty-state-box">
+            Enter an instruction to query catalog items, run a PayPal checkout, or audit pending orders.
+          </div>
+        </div>
+        <div class="agent-input-dock">
+          <input type="text" id="agent-query-input" placeholder="e.g., Audit pending orders or checkout a catalog item...">
+          <button class="btn btn-primary" id="btn-run-agent">Run Agent</button>
+        </div>
+      </section>
+    </div>
+
+    <!-- TAB 3: Webhooks -->
+    <div class="tab-pane" id="tab-webhooks">
+      <section class="pane full-pane webhooks-pane">
+        <div class="pane-header pane-header-split">
+          <span>PayPal Webhook Dispatcher</span>
+          <span class="header-endpoint">POST /webhooks/paypal</span>
+        </div>
+        <div class="pane-body webhooks-body">
+          <div class="webhook-controls">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="webhook-event-select">Event Type</label>
+                <select id="webhook-event-select">
+                  <option value="PAYMENT.AUTHORIZATION.CREATED">PAYMENT.AUTHORIZATION.CREATED</option>
+                  <option value="PAYMENT.CAPTURE.COMPLETED">PAYMENT.CAPTURE.COMPLETED</option>
+                  <option value="PAYMENT.CAPTURE.DENIED">PAYMENT.CAPTURE.DENIED</option>
+                  <option value="RISK.DISPUTE.CREATED">RISK.DISPUTE.CREATED</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="webhook-order-id">Resource Order ID *</label>
+                <input type="text" id="webhook-order-id" placeholder="Enter Order ID (e.g., 50190127TN364715T)">
+              </div>
+            </div>
+            <button class="btn btn-primary" id="btn-send-webhook">Send Webhook</button>
+          </div>
+          <div class="webhook-log-area" id="webhook-log">
+            <div class="empty-state-box">No webhook events dispatched.</div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Status Bar -->
+  <footer class="app-statusbar">
+    <span id="status-message">Ready</span>
+    <span id="status-ledger-count">Ledger: 0 Orders</span>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

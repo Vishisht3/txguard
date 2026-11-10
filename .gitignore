@@ -5,6 +5,12 @@ models/
 *.pth
 *.pt
 
+# Ignore virtual environments and env secrets
+.venv/
+venv/
+.env
+
 # Ignore bytecode and notebook checkpoints
 __pycache__/
+.pytest_cache/
 .ipynb_checkpoints/

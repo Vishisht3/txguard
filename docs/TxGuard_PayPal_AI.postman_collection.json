@@ -1,0 +1,168 @@
+{
+  "info": {
+    "_postman_id": "8e44c910-5c1a-4d9f-9a12-77b1e3990123",
+    "name": "TxGuard × PayPal AI Risk Gate & Agentic Commerce API",
+    "description": "Official Postman Collection for the PayPal AI Hackathon. Tests PayPal Orders v2 AUTHORIZE flow, PyTorch Residual MLP risk scoring, Gemini 3.8 Flash Explainable AI forensics, Step-Up 2FA verification, Channel3 product catalog, and PayPal Webhooks v1.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Health & Runtime Telemetry",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        }
+      }
+    },
+    {
+      "name": "2. Channel3 Product Intelligence Catalog",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/channel3/products",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "channel3", "products"]
+        }
+      }
+    },
+    {
+      "name": "3. PayPal Orders v2 Authorize + TxGuard Gate (Low-Risk Auto-Capture)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"product_id\": \"CH3-SONY-XM5\",\n  \"amount\": 348.00,\n  \"currency\": \"USD\",\n  \"payer_email\": \"alex.morgan@verified-buyer.com\",\n  \"payer_name\": \"Alex Morgan\",\n  \"payer_country\": \"US\",\n  \"shipping_country\": \"US\",\n  \"velocity_1h\": 1,\n  \"account_age_days\": 840,\n  \"country_mismatch\": false,\n  \"ip_proxy_detected\": false,\n  \"device_trust_score\": 0.96\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/paypal/orders/create-and-evaluate",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "paypal", "orders", "create-and-evaluate"]
+        }
+      }
+    },
+    {
+      "name": "4. PayPal Orders v2 Authorize + TxGuard Gate (Medium-Risk Step-Up 2FA Hold)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"product_id\": \"CH3-APPLE-IPAD-M4\",\n  \"amount\": 1299.00,\n  \"currency\": \"USD\",\n  \"payer_email\": \"jordan.lee.travel@fastmail.io\",\n  \"payer_name\": \"Jordan Lee\",\n  \"payer_country\": \"US\",\n  \"shipping_country\": \"CA\",\n  \"velocity_1h\": 3,\n  \"account_age_days\": 28,\n  \"country_mismatch\": true,\n  \"ip_proxy_detected\": false,\n  \"device_trust_score\": 0.58\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/paypal/orders/create-and-evaluate",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "paypal", "orders", "create-and-evaluate"]
+        }
+      }
+    },
+    {
+      "name": "5. PayPal Orders v2 Authorize + TxGuard Gate (High-Risk Auto-Void)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"product_id\": \"CH3-NVIDIA-RTX5090\",\n  \"amount\": 2499.00,\n  \"currency\": \"USD\",\n  \"payer_email\": \"temp.drop.9941@anon-mail.xyz\",\n  \"payer_name\": \"V. Kova\",\n  \"payer_country\": \"US\",\n  \"shipping_country\": \"RO\",\n  \"velocity_1h\": 7,\n  \"account_age_days\": 2,\n  \"country_mismatch\": true,\n  \"ip_proxy_detected\": true,\n  \"device_trust_score\": 0.14\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/paypal/orders/create-and-evaluate",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "paypal", "orders", "create-and-evaluate"]
+        }
+      }
+    },
+    {
+      "name": "6. Gemini 3.8 Flash Agentic Commerce Copilot",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"prompt\": \"Buy the Sony XM5 headphones via PayPal Sandbox and run TxGuard protection\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/agent/chat",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "agent", "chat"]
+        }
+      }
+    },
+    {
+      "name": "7. Raw 29-Feature PyTorch Residual MLP Inference",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"features\": [0.55, -0.25, 0.0, -0.45, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.3, 0.45, 0.0, 0.5, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.2]\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/predict-risk",
+          "host": ["{{baseUrl}}"],
+          "path": ["predict-risk"]
+        }
+      }
+    },
+    {
+      "name": "8. PayPal Webhooks v1 Receiver",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": \"WH-7781920-99102\",\n  \"event_type\": \"PAYMENT.AUTHORIZATION.CREATED\",\n  \"resource\": {\n    \"id\": \"0VF992817263\",\n    \"status\": \"CREATED\",\n    \"amount\": {\n      \"currency_code\": \"USD\",\n      \"value\": \"348.00\"\n    }\n  }\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/webhooks/paypal",
+          "host": ["{{baseUrl}}"],
+          "path": ["webhooks", "paypal"]
+        }
+      }
+    }
+  ]
+}
+

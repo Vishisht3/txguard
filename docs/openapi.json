@@ -1,0 +1,259 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "TxGuard × PayPal AI Risk Manager & Agentic Commerce API",
+    "version": "2.0.0",
+    "description": "Real-Time Two-Tier Cascading Fraud Gate & Gemini Agentic Commerce Platform built on the PayPal Developer Platform (Orders v2, Authorizations v2, Webhooks v1) and PyTorch Residual Neural Networks."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8000",
+      "description": "Local Sandbox Development Server"
+    },
+    {
+      "url": "https://txguard-paypal-ai-risk-gate.onrender.com",
+      "description": "Render Cloud Deployment"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health Check & Active Sponsor Integrations",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/api/config": {
+      "get": {
+        "summary": "Get Client Configuration & Ledger Metrics",
+        "operationId": "get_client_config_api_config_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/predict-risk": {
+      "post": {
+        "summary": "Score Raw 29-Feature Transaction Vector via PyTorch Residual MLP",
+        "operationId": "predict_risk_predict_risk_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransactionPayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Risk Score & Cascading Policy Decision"
+          }
+        }
+      }
+    },
+    "/api/channel3/products": {
+      "get": {
+        "summary": "Search Channel3 Product Intelligence Catalog",
+        "operationId": "list_channel3_products_api_channel3_products_get",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "max_price",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "number" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Matched Channel3 Products"
+          }
+        }
+      }
+    },
+    "/api/paypal/orders/create-and-evaluate": {
+      "post": {
+        "summary": "Authorize PayPal Orders v2 & Execute Two-Tier Cascading AI Risk Gate",
+        "operationId": "create_and_evaluate_paypal_order_api_paypal_orders_create_and_evaluate_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PayPalCheckoutRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "PayPal Order Authorized, Scored by PyTorch + Gemini XAI, and Captured/Held/Voided"
+          }
+        }
+      }
+    },
+    "/api/paypal/orders/{order_id}/step-up": {
+      "post": {
+        "summary": "Verify Buyer Step-Up 2FA Challenge & Auto-Capture or Void PayPal Authorization",
+        "operationId": "resolve_step_up_challenge_api_paypal_orders__order_id__step_up_post",
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StepUpChallengeSubmission"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Step-Up Verdict & Updated PayPal Order Settlement Status"
+          }
+        }
+      }
+    },
+    "/api/paypal/orders/{order_id}/capture": {
+      "post": {
+        "summary": "Manually Capture Held PayPal Authorization",
+        "operationId": "manual_capture_order_api_paypal_orders__order_id__capture_post",
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Authorization Captured"
+          }
+        }
+      }
+    },
+    "/api/paypal/orders/{order_id}/void": {
+      "post": {
+        "summary": "Manually Void Held PayPal Authorization",
+        "operationId": "manual_void_order_api_paypal_orders__order_id__void_post",
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Authorization Voided"
+          }
+        }
+      }
+    },
+    "/api/agent/chat": {
+      "post": {
+        "summary": "Gemini 3.8 Flash Autonomous Agentic Commerce & Risk Operations Copilot",
+        "operationId": "agentic_commerce_chat_api_agent_chat_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgentChatRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Agent Response and Executed Function Call Steps"
+          }
+        }
+      }
+    },
+    "/webhooks/paypal": {
+      "post": {
+        "summary": "PayPal Webhooks v1 Receiver & Cryptographic Signature Verification",
+        "operationId": "paypal_webhook_listener_webhooks_paypal_post",
+        "responses": {
+          "200": {
+            "description": "Webhook Verified and Processed"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "TransactionPayload": {
+        "type": "object",
+        "required": ["features"],
+        "properties": {
+          "features": {
+            "type": "array",
+            "items": { "type": "number" },
+            "description": "Array of 29 scaled transaction features."
+          }
+        }
+      },
+      "PayPalCheckoutRequest": {
+        "type": "object",
+        "properties": {
+          "product_id": { "type": "string", "default": "CH3-SONY-XM5" },
+          "item_title": { "type": "string" },
+          "amount": { "type": "number", "default": 348.0 },
+          "currency": { "type": "string", "default": "USD" },
+          "payer_email": { "type": "string", "default": "alex.morgan@verified-buyer.com" },
+          "payer_name": { "type": "string", "default": "Alex Morgan" },
+          "payer_country": { "type": "string", "default": "US" },
+          "shipping_country": { "type": "string", "default": "US" },
+          "velocity_1h": { "type": "integer", "default": 1 },
+          "account_age_days": { "type": "integer", "default": 620 },
+          "country_mismatch": { "type": "boolean", "default": false },
+          "ip_proxy_detected": { "type": "boolean", "default": false },
+          "device_trust_score": { "type": "number", "default": 0.94 },
+          "is_digital_goods": { "type": "boolean", "default": false },
+          "email_domain_risk": { "type": "number", "default": 0.04 }
+        }
+      },
+      "StepUpChallengeSubmission": {
+        "type": "object",
+        "required": ["buyer_response"],
+        "properties": {
+          "buyer_response": { "type": "string" },
+          "otp_code": { "type": "string", "default": "849201" }
+        }
+      },
+      "AgentChatRequest": {
+        "type": "object",
+        "required": ["prompt"],
+        "properties": {
+          "prompt": { "type": "string" }
+        }
+      }
+    }
+  }
+}
+

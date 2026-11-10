@@ -1,0 +1,26 @@
+{
+  "Specification": "../../openapi.json",
+  "GenerateSDKs": [
+    "Python",
+    "TypeScript",
+    "Java",
+    "CSharp",
+    "Go"
+  ],
+  "PortalSettings": {
+    "Title": "TxGuard × PayPal AI Risk Gate Developer Portal",
+    "Theme": "Dark",
+    "PrimaryColor": "#0070BA",
+    "EnableTryItOut": true,
+    "SandboxBaseUrl": "http://localhost:8000"
+  },
+  "CodeGenSettings": {
+    "AsyncMode": true,
+    "RetryConfiguration": {
+      "MaxNumberOfRetries": 3,
+      "BackoffFactor": 2.0
+    },
+    "UseModelPrefix": false
+  }
+}
+

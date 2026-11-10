@@ -1,0 +1,741 @@
+/* ==========================================================================
+   TxGuard — Authentic RocqIDE / CoqIDE GTK3 Workbench Theme
+   ========================================================================== */
+
+:root {
+  /* CoqIDE Signature Palette */
+  --coq-titlebar: #239474;
+  --coq-titlebar-dark: #1b7a5f;
+  --coq-select-green: #159c73;
+  --coq-verified-green: #a7f3a2;
+  --coq-error-red: #ffb4b4;
+  --coq-warn-yellow: #fff2a8;
+
+  /* GTK3 Adwaita Cool Silver & Canvas */
+  --gtk-base: #ededed;
+  --gtk-window: #e1e1df;
+  --gtk-canvas: #ffffff;
+  --gtk-border: #b8b8b5;
+  --gtk-border-dark: #8c8c88;
+  --gtk-inset-bg: #f7f7f6;
+
+  /* Text */
+  --text-main: #18181b;
+  --text-muted: #3f3f46;
+  --text-dim: #666666;
+  --font-ui: "IBM Plex Sans", "DejaVu Sans", "Liberation Sans", -apple-system, sans-serif;
+  --font-mono: "IBM Plex Mono", "DejaVu Sans Mono", "Consolas", monospace;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-main);
+  background-color: var(--gtk-window);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* --------------------------------------------------------------------------
+   Top Window Bar (CoqIDE Titlebar)
+   -------------------------------------------------------------------------- */
+.app-header {
+  background: linear-gradient(180deg, var(--coq-titlebar) 0%, var(--coq-titlebar-dark) 100%);
+  color: #ffffff;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #145e49;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.brand-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.2px;
+}
+
+.brand-title::before {
+  content: "🐓";
+  font-size: 14px;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* --------------------------------------------------------------------------
+   Workbench Toolbar & GTK Tabs
+   -------------------------------------------------------------------------- */
+.workbench-toolbar {
+  background: var(--gtk-base);
+  border-bottom: 1px solid var(--gtk-border);
+  padding: 6px 10px 0 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.tabs-container {
+  display: flex;
+  gap: 3px;
+}
+
+.tab-btn {
+  font-family: var(--font-ui);
+  font-size: 12.5px;
+  font-weight: 500;
+  padding: 5px 14px;
+  background: linear-gradient(180deg, #fbfbfb 0%, #e2e2df 100%);
+  border: 1px solid var(--gtk-border);
+  border-bottom: 1px solid var(--gtk-border-dark);
+  border-radius: 5px 5px 0 0;
+  color: #333333;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tab-btn:hover {
+  background: #ffffff;
+}
+
+.tab-btn.active {
+  background: var(--gtk-canvas);
+  border-bottom: 1px solid var(--gtk-canvas);
+  color: #000000;
+  font-weight: 600;
+  position: relative;
+  top: 1px;
+  z-index: 2;
+}
+
+/* Telemetry Stats Chips in Header Toolbar */
+.stats-strip {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding-bottom: 5px;
+  flex-wrap: wrap;
+}
+
+.stat-chip {
+  background: var(--gtk-canvas);
+  border: 1px solid var(--gtk-border);
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 11.5px;
+  display: inline-flex;
+  gap: 6px;
+  align-items: baseline;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+
+.chip-label {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.stat-chip strong {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-main);
+}
+
+/* --------------------------------------------------------------------------
+   Main Content Area & Panes
+   -------------------------------------------------------------------------- */
+.content-area {
+  flex: 1;
+  background: var(--gtk-base);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.tab-pane {
+  display: none;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 0;
+  height: 100%;
+}
+
+.tab-pane.active {
+  display: flex;
+}
+
+.main-split {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 6px;
+  min-height: 0;
+}
+
+@media (max-width: 1024px) {
+  .main-split {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pane {
+  background: var(--gtk-canvas);
+  border: 1px solid var(--gtk-border);
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.full-pane {
+  flex: 1;
+  height: 100%;
+}
+
+.bottom-pane {
+  height: 215px;
+  min-height: 160px;
+}
+
+.pane-header {
+  background: linear-gradient(180deg, #f7f7f6 0%, #ebebea 100%);
+  border-bottom: 1px solid var(--gtk-border);
+  padding: 6px 12px;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.01em;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  min-height: 34px;
+}
+
+.pane-header-split {
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.header-endpoint {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.pane-body {
+  padding: 10px 14px;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* --------------------------------------------------------------------------
+   Forms, Inputs & Checkboxes
+   -------------------------------------------------------------------------- */
+#order-form {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-bottom: 3px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="search"],
+input[type="number"],
+select,
+textarea {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+  padding: 4px 8px;
+  min-height: 28px;
+  border: 1px solid var(--gtk-border-dark);
+  border-radius: 4px;
+  background: #ffffff;
+  color: var(--text-main);
+  outline: none;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--coq-select-green);
+  box-shadow: 0 0 0 2px rgba(21, 156, 115, 0.18);
+}
+
+input.invalid {
+  border-color: #c92a2a;
+}
+
+.checkbox-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  padding: 2px 0;
+}
+
+.checkbox-row label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   CoqIDE Beveled GTK3 Buttons
+   -------------------------------------------------------------------------- */
+.btn {
+  font-family: var(--font-ui);
+  font-size: 12.5px;
+  font-weight: 500;
+  padding: 5px 12px;
+  min-height: 30px;
+  background: linear-gradient(180deg, #ffffff 0%, #ebebea 100%);
+  border: 1px solid var(--gtk-border-dark);
+  border-radius: 4px;
+  color: var(--text-main);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.06);
+  white-space: nowrap;
+}
+
+.btn:hover:not(:disabled) {
+  background: linear-gradient(180deg, #fdfdfd 0%, #dedede 100%);
+}
+
+.btn:active:not(:disabled) {
+  background: #d8d8d5;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+.btn:disabled {
+  opacity: 0.72;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  border-color: #1a785d;
+  background: linear-gradient(180deg, #2cb38c 0%, #1e8d6d 100%);
+  color: #ffffff;
+  font-weight: 600;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.22);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(180deg, #32c49a 0%, #229976 100%);
+}
+
+.btn-primary::before {
+  content: "✔";
+  font-size: 11px;
+}
+
+.btn-secondary {
+  background: linear-gradient(180deg, #ffffff 0%, #e6e6e3 100%);
+  color: var(--text-main);
+}
+
+.btn-stop {
+  background: linear-gradient(180deg, #fff5f5 0%, #ffe3e3 100%);
+  border-color: #e08f8f;
+  color: #8c1d1d;
+}
+
+.btn-stop::before {
+  content: "●";
+  color: #d93838;
+  font-size: 10px;
+}
+
+/* --------------------------------------------------------------------------
+   Forensic Inspector & Empty States
+   -------------------------------------------------------------------------- */
+.empty-state-box {
+  padding: 18px 14px;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 12.5px;
+  border: 1px dashed var(--gtk-border);
+  border-radius: 4px;
+  background: var(--gtk-inset-bg);
+}
+
+.inspector-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+@media (max-width: 768px) {
+  .inspector-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.inspector-fieldset {
+  border: 1px solid var(--gtk-border);
+  border-radius: 4px;
+  padding: 8px 12px 10px 12px;
+  background: var(--gtk-inset-bg);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.inspector-fieldset legend {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+  padding: 0 5px;
+}
+
+.kv-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  border-bottom: 1px dotted #d8d8d4;
+  padding: 3px 0;
+}
+
+.kv-row:last-child {
+  border-bottom: none;
+}
+
+.kv-key {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.kv-val {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-main);
+}
+
+.signal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 4px 0;
+  border-bottom: 1px dotted #d8d8d4;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-main);
+}
+
+.stepup-box {
+  background: var(--coq-warn-yellow);
+  border: 1px solid #dfcf75;
+  border-radius: 4px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #4d3f00;
+}
+
+.alert-banner {
+  background: var(--coq-error-red);
+  border: 1px solid #e08f8f;
+  color: #7a1414;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+/* --------------------------------------------------------------------------
+   Transaction Ledger Table
+   -------------------------------------------------------------------------- */
+.ledger-filter-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ledger-filter-controls input {
+  width: 190px;
+}
+
+.ledger-filter-controls select {
+  width: 150px;
+}
+
+.ledger-body {
+  padding: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.ledger-body > .empty-state-box {
+  margin: 10px 14px;
+}
+
+.gtk-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.gtk-table th {
+  background: linear-gradient(180deg, #f7f7f6 0%, #ebebea 100%);
+  border-bottom: 1px solid var(--gtk-border);
+  border-right: 1px solid #d4d4d0;
+  padding: 5px 8px;
+  text-align: left;
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 11.5px;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gtk-table td {
+  padding: 4px 8px;
+  border-bottom: 1px solid #f0f0ee;
+  border-right: 1px solid #f2f2ef;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+
+.gtk-table tbody tr {
+  cursor: pointer;
+}
+
+.gtk-table tbody tr:hover {
+  background-color: #eaf6f2;
+}
+
+.gtk-table tbody tr.selected {
+  background-color: var(--coq-select-green) !important;
+  color: #ffffff;
+}
+
+.gtk-table tbody tr.selected td {
+  color: #ffffff;
+}
+
+.col-time { width: 9%; }
+.col-order { width: 14%; }
+.col-item { width: 20%; }
+.col-buyer { width: 17%; }
+.col-amount { width: 9%; text-align: right; }
+.col-score { width: 8%; text-align: right; }
+.col-status { width: 10%; }
+.col-actions { width: 13%; text-align: right; }
+
+.gtk-table th.col-amount,
+.gtk-table td.col-amount,
+.gtk-table th.col-score,
+.gtk-table td.col-score,
+.gtk-table th.col-actions,
+.gtk-table td.col-actions {
+  text-align: right;
+}
+
+.row-action-group {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.row-action-group .btn {
+  min-height: 24px;
+  padding: 2px 8px;
+  font-size: 11.5px;
+}
+
+/* Status Badges */
+.badge {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.badge-approved {
+  background: var(--coq-verified-green);
+  color: #145914;
+  border: 1px solid #84d67e;
+}
+
+.badge-rejected {
+  background: var(--coq-error-red);
+  color: #8c1d1d;
+  border: 1px solid #e08f8f;
+}
+
+.badge-2fa {
+  background: var(--coq-warn-yellow);
+  color: #695700;
+  border: 1px solid #dfcf75;
+}
+
+/* --------------------------------------------------------------------------
+   Agent Studio & Webhooks Panes
+   -------------------------------------------------------------------------- */
+.agent-log-body {
+  background: var(--gtk-inset-bg);
+  margin: 10px 14px 0 14px;
+  border: 1px solid var(--gtk-border);
+  border-radius: 4px;
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.agent-input-dock {
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.agent-input-dock input {
+  flex: 1;
+}
+
+.agent-entry {
+  padding: 7px 10px;
+  border-radius: 4px;
+  border: 1px solid var(--gtk-border);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.agent-entry.user {
+  background: #ebebea;
+  align-self: flex-end;
+}
+
+.agent-entry.assistant {
+  background: var(--coq-verified-green);
+  border-color: #84d67e;
+  color: #103b10;
+  align-self: flex-start;
+}
+
+.webhooks-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.webhook-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.webhook-controls > .btn {
+  align-self: flex-start;
+}
+
+.webhook-log-area {
+  flex: 1;
+  background: var(--gtk-inset-bg);
+  border: 1px solid var(--gtk-border);
+  border-radius: 4px;
+  padding: 10px 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  white-space: pre-wrap;
+  overflow-y: auto;
+}
+
+/* --------------------------------------------------------------------------
+   Bottom Statusbar
+   -------------------------------------------------------------------------- */
+.app-statusbar {
+  background: #ebebea;
+  border-top: 1px solid var(--gtk-border);
+  padding: 4px 12px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
